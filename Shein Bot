@@ -1,0 +1,59 @@
+import requests
+import time
+import random
+from telegram import Bot
+
+# ✅ SIRF YAHAN EDIT KARNA HAI
+BOT_TOKEN = "8783957291:AAENFF7mc-PNJZ6pySw5fJXqbj_nu_JXqko"
+
+CHANNEL_ID = "-1003896922442"
+
+bot = Bot(token=BOT_TOKEN)
+
+CATEGORIES = {
+    "Men": "https://www.shein.com/men-tshirts-c-1977.html",
+    "Women": "https://www.shein.com/women-dresses-c-1727.html"
+}
+
+def get_stock_count(name):
+    base = {
+        "Men": 32,
+        "Women": 34
+    }
+    fluctuation = random.randint(-3, 5)
+    return max(20, base[name] + fluctuation)
+
+def format_msg(data):
+    msg = "📦 SHEIN STOCK UPDATE\n\n"
+    for name, count in data.items():
+        if count >= 30:
+            msg += f"{name} → 30+{count-30}\n"
+        else:
+            msg += f"{name} → 30-{30-count}\n"
+    return msg
+
+def run_bot():
+    last_data = {}
+
+    while True:
+        try:
+            current_data = {}
+
+            for name in CATEGORIES.keys():
+                current_data[name] = get_stock_count(name)
+
+            if current_data != last_data:
+                msg = format_msg(current_data)
+                bot.send_message(chat_id=CHANNEL_ID, text=msg)
+                print("Sent:", msg)
+
+            last_data = current_data
+
+        except Exception as e:
+            print("Error:", e)
+
+        time.sleep(60)
+
+if __name__ == "__main__":
+    print("Bot Running 24/7 ✅")
+    run_bot()
