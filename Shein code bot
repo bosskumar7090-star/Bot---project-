@@ -1,0 +1,59 @@
+import os
+import requests
+import time
+from telegram import Bot
+
+BOT_TOKEN = os.getenv("8783957291:AAENFF7mc-PNJZ6pySw5fJXqbj_nu_JXqko")
+CHANNEL_ID = os.getenv("-1003896922442")
+
+bot = Bot(token=BOT_TOKEN)
+
+# 🔹 Categories (edit kar sakte ho)
+CATEGORIES = {
+    "Men": "https://www.shein.com/men-tshirts-c-1977.html",
+    "Women": "https://www.shein.com/women-dresses-c-1727.html"
+}
+
+# 🔹 Fake stock counter (real scraping tough hai safely)
+def get_stock_count(url):
+    try:
+        r = requests.get(url, timeout=10)
+        if r.status_code == 200:
+            # 🔥 demo logic (random type count)
+            import random
+            return random.randint(25, 40)
+        else:
+            return 0
+    except:
+        return 0..
+
+# 🔹 Format message
+def format_msg(data):
+    msg = "📦 SHEIN STOCK UPDATE\n\n"
+    for name, count in data.items():
+        if count >= 30:
+            msg += f"{name} → 30+{count-30}\n"
+        else:
+            msg += f"{name} → 30-{30-count}\n"
+    return msg
+
+# 🔹 Main loop (60 sec)
+def run_bot():
+    last_data = {}
+
+    while True:
+        current_data = {}
+
+        for name, url in CATEGORIES.items():
+            count = get_stock_count(url)
+            current_data[name] = count
+
+        # 🔥 Only send if change
+        if current_data != last_data:
+            msg = format_msg(current_data)
+            bot.send_message(chat_id=CHANNEL_ID, text=msg)
+            print(msg)
+
+        last_data = current_data
+        time.sleep(60)
+
